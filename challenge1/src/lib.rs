@@ -34,21 +34,11 @@ impl Config {
 fn get_calibration_value(calibration_doc_lines: Lines<BufReader<File>>) {
     let mut calibration_number = 0;
     for line in calibration_doc_lines {
-        let mut first: Option<char> = None;
-        let mut last: Option<char> = None;
         if let Ok(calibration_line) = line {
-            let characters: Vec<char> = calibration_line.chars().collect();
-            for char in characters {
-                if char.is_numeric() {
-                    if first == None {
-                        first = Some(char);
-                    }
-
-                    last = Some(char);
-                }
-            }
-
-            let final_line_string = format!("{}{}", first.unwrap(), last.unwrap());
+            let matches: Vec<&str> = calibration_line.matches(char::is_numeric).collect();
+            let first = matches[0];
+            let last = matches[matches.len() - 1];
+            let final_line_string = format!("{}{}", first, last);
             let final_line_value: i32 = final_line_string.parse().unwrap();
             calibration_number = calibration_number + final_line_value;
         }
